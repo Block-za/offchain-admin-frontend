@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { toast } from 'react-toastify'
 import './EventForm.css'
+import { API_BASE_URL } from '../config'
 
 const EventForm = () => {
   const [formData, setFormData] = useState({
@@ -50,8 +51,8 @@ const EventForm = () => {
         submitData.append('image', image)
       }
       
-      // Send data to API
-      const response = await fetch('http://localhost:5000/api/events', {
+      // Updated API URL to use environment variable
+      const response = await fetch(`${API_BASE_URL}/api/events`, {
         method: 'POST',
         body: submitData,
         // Don't set Content-Type header, let the browser set it with boundary for FormData
