@@ -52,7 +52,7 @@ const EventForm = () => {
       }
       
       // Updated API URL to use environment variable
-      const response = await fetch(`${API_BASE_URL}/api/events`, {
+      const response = await fetch("https://blockza-events-backend.onrender.com/api/events", {
         method: 'POST',
         body: submitData,
         // Don't set Content-Type header, let the browser set it with boundary for FormData
