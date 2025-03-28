@@ -7,15 +7,34 @@ import { API_BASE_URL } from '../config'
 const EventForm = () => {
   const [formData, setFormData] = useState({
     title: '',
-    date: '',
-    location: '',
+    company: '',
     description: '',
-    status: 'Upcoming'
+    location: '',
+    country: '',
+    city: '',
+    eventStartDate: '',
+    eventEndDate: '',
+    category: '',
+    website: '',
+    linkedin: '',
+    telegram: '',
+    twitter: '',
+    instagram: ''
   })
   
   const [image, setImage] = useState(null)
   const [imagePreview, setImagePreview] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const categories = [
+    'Conference',
+    'Workshop',
+    'Webinar',
+    'Meetup',
+    'Hackathon',
+    'Training',
+    'Other'
+  ]
   
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -32,54 +51,90 @@ const EventForm = () => {
       setImagePreview(URL.createObjectURL(file))
     }
   }
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-    
+
     try {
-      // Create form data object to send file
-      const submitData = new FormData()
+      const formDataToSend = new FormData()
       
-      // Add all form fields
-      Object.keys(formData).forEach(key => {
-        submitData.append(key, formData[key])
-      })
-      
-      // Add image if selected
-      if (image) {
-        submitData.append('image', image)
+      // Format dates to ISO string
+      const formattedData = {
+        ...formData,
+        eventStartDate: new Date(formData.eventStartDate).toISOString(),
+        eventEndDate: new Date(formData.eventEndDate).toISOString()
       }
-      
-      // Updated API URL to use environment variable
-      const response = await fetch("https://blockza-events-backend.onrender.com/api/events", {
-        method: 'POST',
-        body: submitData,
-        // Don't set Content-Type header, let the browser set it with boundary for FormData
+
+      // Append all text fields
+      for (const key in formattedData) {
+        if (formattedData[key]) {
+          if (['linkedin', 'telegram', 'twitter', 'instagram'].includes(key)) {
+            continue;
+          }
+          formDataToSend.append(key, formattedData[key])
+        }
+      }
+
+      // Append social links
+      const socialLinks = {
+        linkedin: formData.linkedin || '',
+        telegram: formData.telegram || '',
+        twitter: formData.twitter || '',
+        instagram: formData.instagram || ''
+      }
+
+      Object.keys(socialLinks).forEach(key => {
+        formDataToSend.append(key, socialLinks[key])
       })
+
+      // Append image with the correct field name 'featuredImage'
+      if (image) {
+        formDataToSend.append('featuredImage', image)
+      } else {
+        throw new Error('Featured image is required')
+      }
+
+      // Log FormData for debugging
+      for (let pair of formDataToSend.entries()) {
+        console.log(pair[0] + ': ' + pair[1]); 
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/events`, {
+        method: 'POST',
+        body: formDataToSend
+      })
+
+      const data = await response.json()
       
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || 'Failed to create event')
+        throw new Error(data.error || 'Failed to create event')
       }
+
+      toast.success('Event created successfully!')
       
-      const result = await response.json()
-      
-      // Reset form after successful submission
+      // Reset form
       setFormData({
         title: '',
-        date: '',
-        location: '',
+        company: '',
         description: '',
-        status: 'Upcoming'
+        location: '',
+        country: '',
+        city: '',
+        eventStartDate: '',
+        eventEndDate: '',
+        category: '',
+        website: '',
+        linkedin: '',
+        telegram: '',
+        twitter: '',
+        instagram: ''
       })
       setImage(null)
       setImagePreview('')
-      
-      toast.success('Event created successfully!')
     } catch (error) {
-      toast.error(error.message || 'Something went wrong')
-      console.error('Error creating event:', error)
+      toast.error(error.message || 'Error creating event')
+      console.error('Error details:', error)
     } finally {
       setLoading(false)
     }
@@ -89,92 +144,228 @@ const EventForm = () => {
     <div className="form-container">
       <h2>Create New Event</h2>
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="title">Event Title*</label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            required
-            placeholder="Enter event title"
-          />
+        {/* Basic Information */}
+        <div className="form-section">
+          <h3>Basic Information</h3>
+          <div className="form-group">
+            <label htmlFor="title">Event Title *</label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="company">Company Name *</label>
+            <input
+              type="text"
+              id="company"
+              name="company"
+              value={formData.company}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="description">Description *</label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              rows="4"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="category">Category *</label>
+            <select
+              id="category"
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select a category</option>
+              {categories.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
         </div>
-        
-        <div className="form-group">
-          <label htmlFor="date">Event Date*</label>
-          <input
-            type="date"
-            id="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            required
-          />
+
+        {/* Location Details */}
+        <div className="form-section">
+          <h3>Location Details</h3>
+          <div className="form-group">
+            <label htmlFor="location">Venue/Location *</label>
+            <input
+              type="text"
+              id="location"
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="country">Country *</label>
+              <input
+                type="text"
+                id="country"
+                name="country"
+                value={formData.country}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="city">City *</label>
+              <input
+                type="text"
+                id="city"
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
         </div>
-        
-        <div className="form-group">
-          <label htmlFor="location">Location*</label>
-          <input
-            type="text"
-            id="location"
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            required
-            placeholder="Enter event location"
-          />
+
+        {/* Date and Time */}
+        <div className="form-section">
+          <h3>Date and Time</h3>
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="eventStartDate">Start Date and Time *</label>
+              <input
+                type="datetime-local"
+                id="eventStartDate"
+                name="eventStartDate"
+                value={formData.eventStartDate}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="eventEndDate">End Date and Time *</label>
+              <input
+                type="datetime-local"
+                id="eventEndDate"
+                name="eventEndDate"
+                value={formData.eventEndDate}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
         </div>
-        
-        <div className="form-group">
-          <label htmlFor="description">Description</label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Enter event description"
-            rows="4"
-          />
+
+        {/* Links */}
+        <div className="form-section">
+          <h3>Online Presence</h3>
+          <div className="form-group">
+            <label htmlFor="website">Website URL</label>
+            <input
+              type="url"
+              id="website"
+              name="website"
+              value={formData.website}
+              onChange={handleChange}
+              placeholder="https://example.com"
+            />
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="linkedin">LinkedIn</label>
+              <input
+                type="url"
+                id="linkedin"
+                name="linkedin"
+                value={formData.linkedin}
+                onChange={handleChange}
+                placeholder="LinkedIn URL"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="twitter">Twitter</label>
+              <input
+                type="url"
+                id="twitter"
+                name="twitter"
+                value={formData.twitter}
+                onChange={handleChange}
+                placeholder="Twitter URL"
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="telegram">Telegram</label>
+              <input
+                type="url"
+                id="telegram"
+                name="telegram"
+                value={formData.telegram}
+                onChange={handleChange}
+                placeholder="Telegram URL"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="instagram">Instagram</label>
+              <input
+                type="url"
+                id="instagram"
+                name="instagram"
+                value={formData.instagram}
+                onChange={handleChange}
+                placeholder="Instagram URL"
+              />
+            </div>
+          </div>
         </div>
-        
-        <div className="form-group">
-          <label htmlFor="status">Status</label>
-          <select
-            id="status"
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-          >
-            <option value="Upcoming">Upcoming</option>
-            <option value="Ongoing">Ongoing</option>
-            <option value="Ended">Ended</option>
-          </select>
-        </div>
-        
-        <div className="form-group">
-          <label htmlFor="image">Event Image</label>
-          <input
-            type="file"
-            id="image"
-            name="image"
-            accept="image/*"
-            onChange={handleImageChange}
-          />
+
+        {/* Image Upload */}
+        <div className="form-section">
+          <h3>Featured Image</h3>
+          <div className="form-group">
+            <label htmlFor="image">Upload Image *</label>
+            <input
+              type="file"
+              id="image"
+              accept="image/*"
+              onChange={handleImageChange}
+              required
+            />
+          </div>
           {imagePreview && (
             <div className="image-preview">
               <img src={imagePreview} alt="Preview" />
             </div>
           )}
         </div>
-        
+
         <button 
           type="submit" 
-          className="submit-btn"
+          className="submit-btn" 
           disabled={loading}
         >
-          {loading ? 'Creating...' : 'Create Event'}
+          {loading ? 'Creating Event...' : 'Create Event'}
         </button>
       </form>
     </div>

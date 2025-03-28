@@ -4,6 +4,7 @@ import EventForm from './components/EventForm'
 import Sidebar from './components/Sidebar'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import EventList from './components/EventList'
 
 function App() {
   const [currentView, setCurrentView] = useState('welcome')
@@ -13,12 +14,7 @@ function App() {
       case 'events-create':
         return <EventForm />
       case 'events-view':
-        return (
-          <div className="content-section">
-            <h2>View Events</h2>
-            <p>Event list will be implemented here.</p>
-          </div>
-        )
+        return <EventList />
       default:
         return (
           <div className="welcome-message">
