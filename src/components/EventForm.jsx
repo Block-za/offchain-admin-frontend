@@ -9,8 +9,11 @@ const EventForm = () => {
   const [states, setStates] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
+  const [companies, setCompanies] = useState([]);
+  const [selectedCompany, setSelectedCompany] = useState("");
 
   useEffect(() => {
+    // Fetch countries
     fetch("https://restcountries.com/v3.1/all")
       .then(res => res.json())
       .then(data => {
@@ -18,6 +21,20 @@ const EventForm = () => {
         setCountries(countryNames);
       })
       .catch(err => console.error("Error fetching countries:", err));
+
+    // Fetch companies
+    fetch("https://api.blockza.io/api/directory")
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data) {
+          const companyOptions = data.data.map(company => ({
+            id: company._id,
+            name: company.name
+          }));
+          setCompanies(companyOptions);
+        }
+      })
+      .catch(err => console.error("Error fetching companies:", err));
   }, []);
 
   const fetchStates = (country) => {
@@ -135,6 +152,15 @@ const EventForm = () => {
     }
   };
 
+  const handleCompanyChange = (e) => {
+    const companyName = e.target.value;
+    setSelectedCompany(companyName);
+    setFormData(prev => ({
+      ...prev,
+      company: companyName
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -244,14 +270,18 @@ const EventForm = () => {
 
           <div className="form-group">
             <label htmlFor="company">Company Name *</label>
-            <input
-              type="text"
+            <select
               id="company"
               name="company"
-              value={formData.company}
-              onChange={handleChange}
+              value={selectedCompany}
+              onChange={handleCompanyChange}
               required
-            />
+            >
+              <option value="">Select a company</option>
+              {companies.map(company => (
+                <option key={company.id} value={company.name}>{company.name}</option>
+              ))}
+            </select>
           </div>
 
           <div className="form-group">
