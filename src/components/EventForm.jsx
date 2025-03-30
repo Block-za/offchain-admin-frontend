@@ -1,10 +1,55 @@
 // File: components/EventForm.jsx
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import './EventForm.css'
 import { API_BASE_URL } from '../config'
 
 const EventForm = () => {
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+
+  useEffect(() => {
+    fetch("https://restcountries.com/v3.1/all")
+      .then(res => res.json())
+      .then(data => {
+        const countryNames = data.map(country => country.name.common).sort();
+        setCountries(countryNames);
+      })
+      .catch(err => console.error("Error fetching countries:", err));
+  }, []);
+
+  const fetchStates = (country) => {
+    setSelectedCountry(country);
+    setSelectedState("");
+    setFormData(prev => ({
+      ...prev,
+      country: country,
+      city: ""
+    }));
+    if (country) {
+      fetch("https://countriesnow.space/api/v0.1/countries/states", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ country }),
+      })
+      .then(res => res.json())
+      .then(data => setStates(data.data.states.map(state => state.name)))
+      .catch(err => console.error("Error fetching states:", err));
+    } else {
+      setStates([]);
+    }
+  };
+
+  const handleStateChange = (state) => {
+    setSelectedState(state);
+    setFormData(prev => ({
+      ...prev,
+      city: state
+    }));
+  };
+
   const [formData, setFormData] = useState({
     title: '',
     company: '',
@@ -51,6 +96,44 @@ const EventForm = () => {
       setImagePreview(URL.createObjectURL(file))
     }
   }
+
+  const validateUrl = (url) => {
+    if (!url) return true; // Empty URLs are allowed
+    const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
+    return urlRegex.test(url);
+  };
+
+  const handleUrlChange = (e) => {
+    const { name, value } = e.target;
+    if (value && !validateUrl(value)) {
+      toast.error(`Please enter a valid URL for ${name}`);
+      return;
+    }
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleDateChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+
+    // Validate end date is after start date
+    if (name === 'eventEndDate' && formData.eventStartDate) {
+      if (new Date(value) < new Date(formData.eventStartDate)) {
+        toast.error('End date must be after start date');
+      }
+    }
+    if (name === 'eventStartDate' && formData.eventEndDate) {
+      if (new Date(formData.eventEndDate) < new Date(value)) {
+        toast.error('End date must be after start date');
+      }
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -218,26 +301,31 @@ const EventForm = () => {
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="country">Country *</label>
-              <input
-                type="text"
-                id="country"
-                name="country"
-                value={formData.country}
-                onChange={handleChange}
-                required
-              />
+              <select
+            className="filter-select"
+            value={selectedCountry}
+            onChange={(e) => fetchStates(e.target.value)}
+          >
+            <option value="">All Countries</option>
+            {countries.map(country => (
+              <option key={country} value={country}>{country}</option>
+            ))}
+          </select>
             </div>
 
             <div className="form-group">
               <label htmlFor="city">City *</label>
-              <input
-                type="text"
-                id="city"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                required
-              />
+              <select
+            className="filter-select"
+            value={selectedState}
+            onChange={(e) => handleStateChange(e.target.value)}
+            disabled={!selectedCountry}
+          >
+            <option value="">All States</option>
+            {states.map(state => (
+              <option key={state} value={state}>{state}</option>
+            ))}
+          </select>
             </div>
           </div>
         </div>
@@ -253,7 +341,7 @@ const EventForm = () => {
                 id="eventStartDate"
                 name="eventStartDate"
                 value={formData.eventStartDate}
-                onChange={handleChange}
+                onChange={handleDateChange}
                 required
               />
             </div>
@@ -265,7 +353,7 @@ const EventForm = () => {
                 id="eventEndDate"
                 name="eventEndDate"
                 value={formData.eventEndDate}
-                onChange={handleChange}
+                onChange={handleDateChange}
                 required
               />
             </div>
@@ -282,7 +370,7 @@ const EventForm = () => {
               id="website"
               name="website"
               value={formData.website}
-              onChange={handleChange}
+              onChange={handleUrlChange}
               placeholder="https://example.com"
             />
           </div>
@@ -295,7 +383,7 @@ const EventForm = () => {
                 id="linkedin"
                 name="linkedin"
                 value={formData.linkedin}
-                onChange={handleChange}
+                onChange={handleUrlChange}
                 placeholder="LinkedIn URL"
               />
             </div>
@@ -307,7 +395,7 @@ const EventForm = () => {
                 id="twitter"
                 name="twitter"
                 value={formData.twitter}
-                onChange={handleChange}
+                onChange={handleUrlChange}
                 placeholder="Twitter URL"
               />
             </div>
@@ -321,7 +409,7 @@ const EventForm = () => {
                 id="telegram"
                 name="telegram"
                 value={formData.telegram}
-                onChange={handleChange}
+                onChange={handleUrlChange}
                 placeholder="Telegram URL"
               />
             </div>
@@ -333,7 +421,7 @@ const EventForm = () => {
                 id="instagram"
                 name="instagram"
                 value={formData.instagram}
-                onChange={handleChange}
+                onChange={handleUrlChange}
                 placeholder="Instagram URL"
               />
             </div>
