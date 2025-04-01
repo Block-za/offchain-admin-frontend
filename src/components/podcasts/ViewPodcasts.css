@@ -1,0 +1,143 @@
+.view-podcasts {
+  padding: 2rem;
+}
+
+.view-podcasts h1 {
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.podcast-section {
+  margin-bottom: 3rem;
+}
+
+.podcast-section h2 {
+  color: #495057;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.podcast-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.podcast-table th,
+.podcast-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.podcast-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+}
+
+.podcast-table tr:hover {
+  background: #f8f9fa;
+}
+
+.podcast-table .actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.podcast-table .action-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.podcast-table .action-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #e9ecef;
+  color: #6c757d;
+}
+
+.podcast-table .edit-button {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.podcast-table .edit-button:hover {
+  background: #dee2e6;
+}
+
+.podcast-table .delete-button {
+  background: #dc3545;
+  color: white;
+}
+
+.podcast-table .delete-button:hover {
+  background: #c82333;
+}
+
+.podcast-table .delete-button:disabled {
+  background: #dc3545;
+  opacity: 0.7;
+}
+
+.podcast-table .youtube-link {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #ff0000;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  transition: background-color 0.2s;
+}
+
+.podcast-table .youtube-link:hover {
+  background: #cc0000;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.pagination button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #dee2e6;
+  background: white;
+  color: #495057;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.pagination button:disabled {
+  background: #f8f9fa;
+  color: #adb5bd;
+  cursor: not-allowed;
+}
+
+.pagination .active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.pagination .page-info {
+  color: #6c757d;
+  font-size: 0.875rem;
+}
