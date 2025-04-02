@@ -179,7 +179,7 @@ const CreatePodcast = () => {
           >
             <option value="">Select Company</option>
             {companies.map(company => (
-              <option key={company.id} value={company.id}>
+              <option key={company.id} value={company.name}>
                 {company.name}
               </option>
             ))}
