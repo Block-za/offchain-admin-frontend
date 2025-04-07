@@ -51,7 +51,7 @@ const ViewQuiz = () => {
 
   const handleDelete = async (quizId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/quiz/${quizId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/quiz/${quizId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
