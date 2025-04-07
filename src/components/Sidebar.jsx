@@ -5,6 +5,7 @@ import './Sidebar.css'
 const Sidebar = () => {
   const [showEventDropdown, setShowEventDropdown] = useState(false)
   const [showPodcastDropdown, setShowPodcastDropdown] = useState(false)
+  const [showQuizDropdown, setShowQuizDropdown] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -14,6 +15,10 @@ const Sidebar = () => {
 
   const handlePodcastClick = () => {
     setShowPodcastDropdown(!showPodcastDropdown)
+  }
+
+  const handleQuizClick = () => {
+    setShowQuizDropdown(!showQuizDropdown)
   }
 
   const isActive = (path) => {
@@ -28,6 +33,10 @@ const Sidebar = () => {
     return location.pathname.startsWith('/podcasts')
   }
 
+  const isQuizSection = () => {
+    return location.pathname.startsWith('/quiz')
+  }
+
   return (
     <aside className="sidebar">
       <nav className="sidebar-nav">
@@ -37,6 +46,7 @@ const Sidebar = () => {
         >
           <span>Dashboard</span>
         </button>
+
         <div className="dropdown-container">
           <button 
             className={`sidebar-button ${isEventSection() ? 'active' : ''}`}
@@ -62,6 +72,7 @@ const Sidebar = () => {
             </div>
           )}
         </div>
+
         <div className="dropdown-container">
           <button 
             className={`sidebar-button ${isPodcastSection() ? 'active' : ''}`}
@@ -81,6 +92,32 @@ const Sidebar = () => {
               <button 
                 className={`dropdown-item ${isActive('/podcasts') ? 'active' : ''}`}
                 onClick={() => navigate('/podcasts')}
+              >
+                View
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className="dropdown-container">
+          <button 
+            className={`sidebar-button ${isQuizSection() ? 'active' : ''}`}
+            onClick={handleQuizClick}
+          >
+            <span>Quiz</span>
+            <span className="dropdown-arrow">{showQuizDropdown ? '▼' : '▶'}</span>
+          </button>
+          {showQuizDropdown && (
+            <div className="dropdown-menu">
+              <button 
+                className={`dropdown-item ${isActive('/quiz/create') ? 'active' : ''}`}
+                onClick={() => navigate('/quiz/create')}
+              >
+                Create
+              </button>
+              <button 
+                className={`dropdown-item ${isActive('/quiz') ? 'active' : ''}`}
+                onClick={() => navigate('/quiz')}
               >
                 View
               </button>

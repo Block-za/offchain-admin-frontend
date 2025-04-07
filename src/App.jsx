@@ -10,6 +10,8 @@ import EventList from './components/EventList'
 import CreatePodcast from './components/podcasts/CreatePodcast'
 import ViewPodcasts from './components/podcasts/ViewPodcasts'
 import EditPodcast from './components/podcasts/EditPodcast'
+import CreateQuiz from './components/quiz/CreateQuiz'
+import ViewQuiz from './components/quiz/ViewQuiz'
 
 const AppContent = () => {
   const location = useLocation();
@@ -28,6 +30,8 @@ const AppContent = () => {
             <Route path="/podcasts/create" element={<CreatePodcast />} />
             <Route path="/podcasts" element={<ViewPodcasts />} />
             <Route path="/podcasts/edit/:slug" element={<EditPodcast />} />
+            <Route path="/quiz/create" element={<CreateQuiz />} />
+            <Route path="/quiz" element={<ViewQuiz />} />
             <Route path="/" element={
               <div className="welcome-message">
                 <h2>Welcome to Admin Portal</h2>
