@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './CreateQuiz.css';
-import { API_BASE_URL } from '../config'
+import { API_BASE_URL } from '../../config';
 
 const CreateQuiz = () => {
   const navigate = useNavigate();
