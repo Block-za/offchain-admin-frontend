@@ -12,6 +12,7 @@ import ViewPodcasts from './components/podcasts/ViewPodcasts'
 import EditPodcast from './components/podcasts/EditPodcast'
 import CreateQuiz from './components/quiz/CreateQuiz'
 import ViewQuiz from './components/quiz/ViewQuiz'
+import EditQuiz from './components/quiz/EditQuiz'
 
 const AppContent = () => {
   const location = useLocation();
@@ -31,6 +32,7 @@ const AppContent = () => {
             <Route path="/podcasts" element={<ViewPodcasts />} />
             <Route path="/podcasts/edit/:slug" element={<EditPodcast />} />
             <Route path="/quiz/create" element={<CreateQuiz />} />
+            <Route path="/quiz/edit/:id" element={<EditQuiz />} />
             <Route path="/quiz" element={<ViewQuiz />} />
             <Route path="/" element={
               <div className="welcome-message">

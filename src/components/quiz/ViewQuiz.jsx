@@ -105,8 +105,19 @@ const ViewQuiz = () => {
                 <div className="title-container">
                   {quiz.title}
                   <div className="action-links">
-                    <a className="view-link">View</a>
-                    <a className="edit-link">Edit</a>
+                    <a className="view-link" >View</a>
+                    <a 
+                      className="edit-link" 
+                      onClick={() => {
+                        if (quiz._id) {
+                          navigate(`/quiz/edit/${quiz._id}`);
+                        } else {
+                          console.error('Quiz ID is missing');
+                        }
+                      }}
+                    >
+                      Edit
+                    </a>
                     <a 
                       className="delete-link" 
                       onClick={() => {
@@ -128,7 +139,7 @@ const ViewQuiz = () => {
                   {quiz.status}
                 </span>
               </td>
-              <td className="action-buttons">
+              <td className="quiz-action-buttons">
                 <a className="action-link">Add question</a>
                 <a className="action-link">View Questions</a>
                 <a 
