@@ -23,3 +23,10 @@ export const podcastService = {
   publishPodcast: (id) => api.patch(`/podcasts/${id}/publish`),
   unpublishPodcast: (id) => api.patch(`/podcasts/${id}/unpublish`),
 };
+
+export const resultService = {
+  getAllResults: () => api.get('/result'),
+  getResultsByUser: (userId) => api.get(`/result/user/${userId}`),
+  checkUserQuizResult: (quizId, userId) => api.get(`/result/quiz/${quizId}/${userId}`),
+  submitQuiz: (resultData) => api.post('/result/submit', resultData),
+};

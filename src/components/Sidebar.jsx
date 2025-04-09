@@ -121,6 +121,12 @@ const Sidebar = () => {
               >
                 View
               </button>
+              <button 
+                className={`dropdown-item ${isActive('/quiz/manage') ? 'active' : ''}`}
+                onClick={() => navigate('/quiz/manage')}
+              >
+                Manage
+              </button>
             </div>
           )}
         </div>
