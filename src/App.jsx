@@ -14,10 +14,13 @@ import CreateQuiz from './components/quiz/CreateQuiz'
 import ViewQuiz from './components/quiz/ViewQuiz'
 import EditQuiz from './components/quiz/EditQuiz'
 import QuizManagement from './components/quiz/QuizManagement'
+import { AuthProvider } from './context/AuthContext'
+import ProtectedRoute from './components/ProtectedRoute'
+import Login from './pages/Login'
 
 const AppContent = () => {
   const location = useLocation();
-  const isAuthPage = location.pathname === '/auth';
+  const isAuthPage = location.pathname === '/auth' || location.pathname === '/login';
 
   return (
     <div className="app-container">
@@ -26,6 +29,7 @@ const AppContent = () => {
       <div className={`main-content ${isAuthPage ? 'auth-layout' : ''}`}>
         <main>
           <Routes>
+            <Route path="/login" element={<Login />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/events/create" element={<EventForm />} />
             <Route path="/events" element={<EventList />} />
@@ -54,7 +58,19 @@ const AppContent = () => {
 function App() {
   return (
     <Router>
-      <AppContent />
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/*"
+            element={
+              <ProtectedRoute>
+                <AppContent />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </AuthProvider>
     </Router>
   );
 }
